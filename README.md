@@ -1,19 +1,33 @@
 # openclaw-command-code
 
 Command Code ([commandcode.ai](https://commandcode.ai)) model provider plugin for
-OpenClaw, with **full live model discovery** — the catalog is fetched at runtime
-from the Command Code Provider API and is **never hardcoded**.
+OpenClaw, with **two-tier model discovery**: a generated static baseline for
+pre-credential discovery plus a live catalog refreshed at runtime.
 
 ## What it does
 
 - Registers a `commandcode` model provider in OpenClaw.
-- Discovers the model list **live** from
-  `GET https://api.commandcode.ai/provider/v1/models` (a public endpoint, so
-  discovery works before a key is configured).
+- **Static baseline** (`src/baseline.models.ts`, generated — never hand-edited):
+  exposes models for cheap discovery **before a key is configured**, so
+  `models list --provider commandcode` / `/model` can show them without a
+  resolved credential or a running gateway.
+- **Live catalog**: fetches the current model list at runtime from
+  `GET https://api.commandcode.ai/provider/v1/models` (a public endpoint) with
+  a short TTL, keeping the catalog fresh when the gateway is running. The live
+  endpoint is the single source of truth; the baseline is just its snapshot.
 - Routes each model to the correct transport:
   - `claude-*` → **Anthropic Messages** (`/provider/v1/messages`)
   - every other model → **OpenAI Chat Completions** (`/provider/v1/chat/completions`)
 - Refreshes the catalog with a short TTL so new/removed models propagate.
+
+## Regenerating the baseline
+
+The bundled baseline is generated from the live endpoint, not maintained by
+hand. Refresh it when the provider catalog changes:
+
+```bash
+node scripts/generate-baseline.mjs
+```
 
 ## Requirements
 
@@ -62,10 +76,11 @@ openclaw config set agents.defaults.model.primary "commandcode/deepseek/deepseek
 
 ## Model resolution
 
-Model **ids** and **context windows** come from the live `/models` endpoint —
-nothing is hardcoded. Because that endpoint returns context length but **not**
-per-token pricing, output limits, or input modalities, OpenClaw model entries use
-conservative provider-neutral defaults:
+The static baseline and the live catalog share one projection (`projectModel`);
+**ids** and **context windows** come from the `/models` endpoint — the baseline
+is a generated snapshot of it, never hand-maintained. Because that endpoint
+returns context length but **not** per-token pricing, output limits, or input
+modalities, OpenClaw model entries use conservative provider-neutral defaults:
 
 - `cost` is reported as `0` so OpenClaw never displays fabricated prices.
   Enriching costs from the Command Code pricing table is a possible future
@@ -81,7 +96,8 @@ conservative provider-neutral defaults:
 npm install
 npm run build      # tsc -> dist/index.js
 npm test           # vitest: transport + projection mapping
-node scripts/smoke.discovery.mjs   # live discovery smoke test (public endpoint)
+node scripts/generate-baseline.mjs   # refresh src/baseline.models.ts
+node scripts/smoke.discovery.mjs     # static(pre-credential) + live discovery smoke
 ```
 
 The repo intentionally ships **no TypeScript `.d.ts`**: the plugin is consumed

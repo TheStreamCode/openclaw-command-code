@@ -1,8 +1,9 @@
-// Smoke test: exercises the live discovery path of the compiled plugin against
-// the real Command Code /models endpoint. Run: node scripts/smoke.discovery.mjs
-import { createServer } from "node:http";
+// Smoke test: exercises both discovery paths of the compiled plugin.
+//   - staticCatalog (baseline) works WITHOUT credentials — this is what makes
+//     `models list --provider commandcode` show models before a key resolves.
+//   - catalog.run (live) refetches from the real /models endpoint.
+// Run: node scripts/smoke.discovery.mjs
 
-// Minimal mock of the OpenClaw plugin API surface used by this plugin.
 const registeredProviders = [];
 const registeredCatalogs = [];
 const api = {
@@ -20,32 +21,38 @@ console.log("provider label:", provider.label);
 console.log("provider envVars:", provider.envVars?.join(","));
 console.log("auth methods:", (provider.auth || []).map((a) => a.methodId).join(","));
 
-// Find the catalog implementation.
-// defineSingleProviderPluginEntry normalizes `catalog` into run/staticRun.
-const catalog = provider.catalog || provider.staticCatalog;
-console.log(
-  "catalog has run:",
-  typeof (catalog?.run ?? catalog?.buildProvider) === "function"
-);
+const staticCatalog = provider.staticCatalog;
+const liveCatalog = provider.catalog;
 
-let result;
-if (typeof catalog?.run === "function") {
-  result = await catalog.run({ resolveProviderApiKey: () => ({ apiKey: "cc_TEST_FAKE_KEY_FOR_DISCOVERY" }) });
-} else if (typeof catalog?.buildProvider === "function") {
-  result = await catalog.buildProvider();
+console.log("\n-- static baseline (no credentials) --");
+if (staticCatalog && typeof staticCatalog.run === "function") {
+  const staticRun = await staticCatalog.run({
+    resolveProviderApiKey: () => ({ apiKey: undefined }),
+  });
+  const sModels = staticRun?.provider?.models ?? [];
+  const byApi = {};
+  for (const m of sModels) byApi[m.api] = (byApi[m.api] || 0) + 1;
+  console.log("models (static):", sModels.length, "| by transport:", JSON.stringify(byApi));
+  const claude = sModels.find((m) => m.id === "claude-sonnet-5");
+  if (claude) console.log(`  [claude-sonnet-5] -> ${claude.api} ctx=${claude.contextWindow} max=${claude.maxTokens}`);
+} else {
+  console.log("staticCatalog NOT exposed (check entry normalization)");
 }
 
-const models = result?.provider?.models ?? result?.models ?? [];
-console.log("\nmodels discovered (live):", models.length);
-const byApi = {};
-for (const m of models) byApi[m.api] = (byApi[m.api] || 0) + 1;
-console.log("by transport:", JSON.stringify(byApi));
-
-// Spot-check a few ids/routing.
-for (const id of ["claude-sonnet-5", "gpt-5.6-luna", "deepseek/deepseek-v4-flash", "zai-org/GLM-5.3", "moonshotai/Kimi-K3"]) {
-  const m = models.find((x) => x.id === id);
-  if (m) console.log(`  [${id}] -> ${m.api} ctx=${m.contextWindow}`);
-  else console.log(`  [${id}] -> NOT FOUND`);
+console.log("\n-- live discovery (real endpoint) --");
+if (liveCatalog && typeof liveCatalog.run === "function") {
+  const liveRun = await liveCatalog.run({
+    resolveProviderApiKey: () => ({ apiKey: "cc_TEST_FAKE_KEY_FOR_DISCOVERY" }),
+  });
+  const models = liveRun?.provider?.models ?? [];
+  const byApi = {};
+  for (const m of models) byApi[m.api] = (byApi[m.api] || 0) + 1;
+  console.log("models (live):", models.length, "| by transport:", JSON.stringify(byApi));
+  for (const id of ["claude-sonnet-5", "gpt-5.6-luna", "deepseek/deepseek-v4-flash", "zai-org/GLM-5.3", "moonshotai/Kimi-K3"]) {
+    const m = models.find((x) => x.id === id);
+    console.log(`  [${id}] -> ${m ? m.api + " ctx=" + m.contextWindow : "NOT FOUND"}`);
+  }
+  console.log("\nbaseUrl:", liveRun?.provider?.baseUrl);
+} else {
+  console.log("live catalog NOT exposed (check entry normalization)");
 }
-
-console.log("\nbaseUrl:", result?.provider?.baseUrl ?? result?.baseUrl);

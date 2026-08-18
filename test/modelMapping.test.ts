@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { isClaudeModel, projectModel } from "../index.js";
+import { isClaudeModel, projectModel, providerFromRows } from "../index.js";
+import { commandCodeBaselineModels } from "../src/baseline.models.js";
 
 describe("isClaudeModel", () => {
   it("detects Claude ids by convention", () => {
@@ -59,5 +60,28 @@ describe("projectModel", () => {
   it("prefers name when present", () => {
     const m = projectModel({ id: "kimi", name: "Kimi K3", context_length: 262144 });
     expect(m?.name).toBe("Kimi K3");
+  });
+});
+
+describe("static baseline (pre-credential discovery)", () => {
+  it("ships a non-empty generated baseline with Claude + OpenAI routes", () => {
+    expect(commandCodeBaselineModels.length).toBeGreaterThan(0);
+    expect(commandCodeBaselineModels.some((r) => r.id.startsWith("claude-"))).toBe(true);
+    expect(commandCodeBaselineModels.some((r) => !r.id.startsWith("claude-"))).toBe(true);
+  });
+
+  it("projects the baseline into a provider config", () => {
+    const cfg = providerFromRows(commandCodeBaselineModels);
+    expect(cfg.models.length).toBe(commandCodeBaselineModels.length);
+    expect(cfg.baseUrl).toBe("https://api.commandcode.ai/provider/v1");
+    expect(cfg.models.every((m) => m.maxTokens <= 131072)).toBe(true);
+  });
+
+  it("routes every baseline model to a known api", () => {
+    const cfg = providerFromRows(commandCodeBaselineModels);
+    const apis = new Set(cfg.models.map((m) => m.api));
+    expect(apis.has("anthropic-messages")).toBe(true);
+    expect(apis.has("openai-completions")).toBe(true);
+    expect([...apis].every((a) => a === "anthropic-messages" || a === "openai-completions")).toBe(true);
   });
 });

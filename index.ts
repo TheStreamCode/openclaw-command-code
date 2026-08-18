@@ -2,9 +2,14 @@
  * Command Code model provider plugin for OpenClaw.
  *
  * Registers an OpenAI/Anthropic-compatible provider backed by the Command Code
- * Provider API (https://commandcode.ai) with FULL live model discovery:
- * the model catalog is fetched at runtime from
- * `GET https://api.commandcode.ai/provider/v1/models` and is never hardcoded.
+ * Provider API (https://commandcode.ai). The model catalog uses a two-tier
+ * strategy:
+ *
+ *   - `buildStaticProvider`: a bundled baseline snapshot (generated, never
+ *     hand-edited) so models are discoverable before credentials resolve.
+ *   - `buildProvider`: the live catalog fetched at runtime from
+ *     `GET https://api.commandcode.ai/provider/v1/models` with a short TTL,
+ *     keeping models fresh when the gateway is running.
  *
  * Auth: `COMMAND_CODE_API_KEY` (Studio > API Keys). Requires a plan with API
  * access (GOAT / Pro / Max / Team / Provider); the Go plan returns 403
@@ -21,6 +26,7 @@ import type {
   ModelDefinitionConfig,
   ModelProviderConfig,
 } from "openclaw/plugin-sdk/provider-model-types";
+import { commandCodeBaselineModels } from "./src/baseline.models.js";
 
 /** Endpoint that lists available models. Public (no auth required for the list). */
 const MODELS_ENDPOINT = "https://api.commandcode.ai/provider/v1/models";
@@ -35,7 +41,7 @@ const ANTHROPIC_BASE_URL = "https://api.commandcode.ai/provider/v1";
 const CATALOG_TTL_MS = 60_000;
 
 /** Row shape returned by the Command Code /models endpoint. */
-type CommandCodeModelRow = {
+export type CommandCodeModelRow = {
   id?: unknown;
   name?: unknown;
   context_length?: unknown;
@@ -92,6 +98,24 @@ export function projectModel(row: CommandCodeModelRow): ModelDefinitionConfig | 
 }
 
 /**
+ * Builds the provider config from a set of Command Code model rows, mapping each
+ * row through the shared projection. Used by both the live catalog (fetched at
+ * runtime) and the static baseline (bundled snapshot for pre-credential
+ * discovery), so the two never drift in shape.
+ */
+export function providerFromRows(rows: CommandCodeModelRow[]): ModelProviderConfig {
+  const models = rows
+    .map((row) => projectModel(row))
+    .filter((m): m is ModelDefinitionConfig => m !== null);
+
+  return {
+    baseUrl: OPENAI_BASE_URL,
+    api: "openai-completions",
+    models,
+  };
+}
+
+/**
  * Builds the provider config with a fully live-discovered catalog fetched from
  * the Command Code Provider API. No model list is hardcoded here.
  */
@@ -106,15 +130,16 @@ async function buildProvider(): Promise<ModelProviderConfig> {
     // or readModelId needed.
   });
 
-  const models = rows
-    .map((row) => projectModel(row as CommandCodeModelRow))
-    .filter((m): m is ModelDefinitionConfig => m !== null);
+  return providerFromRows(rows as CommandCodeModelRow[]);
+}
 
-  return {
-    baseUrl: OPENAI_BASE_URL,
-    api: "openai-completions",
-    models,
-  };
+/**
+ * Builds the provider config from the bundled static baseline. This exposes
+ * models for cheap pre-credential discovery (models list without a resolved
+ * key / gateway) and is refreshed at runtime by the live catalog above.
+ */
+async function buildStaticProvider(): Promise<ModelProviderConfig> {
+  return providerFromRows(commandCodeBaselineModels as CommandCodeModelRow[]);
 }
 
 export default defineSingleProviderPluginEntry({
@@ -141,6 +166,10 @@ export default defineSingleProviderPluginEntry({
       // Live-discovered catalog. The /models endpoint is public, so discovery
       // works before the user configures a key; inference still requires it.
       buildProvider,
+      // Static baseline for discovery before credentials are resolved. The
+      // baseline is generated from the live endpoint (scripts/generate-baseline.mjs)
+      // and is kept fresh at runtime by the live catalog above.
+      buildStaticProvider,
     },
   },
 });
