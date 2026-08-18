@@ -89,6 +89,11 @@ as a runtime entry (`dist/index.js`), not as a typed library, and an exported
 definition type would not be portable. `dist/` itself is git-ignored and built
 before install/publish.
 
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs type-check, build,
+and unit tests on every push to `main` and on pull requests. Updates to this
+tooling are applied manually on purpose — there is no Dependabot or any other
+automatic update / notification bot configured.
+
 ## Publish (optional)
 
 To make it discoverable on ClawHub:
@@ -108,6 +113,7 @@ package.json             # package + openclaw extension metadata
 LICENSE                  # MIT
 test/modelMapping.test.ts # vitest unit tests (transport + projection mapping)
 scripts/smoke.discovery.mjs # live discovery smoke test against the public endpoint
+.github/workflows/ci.yml    # GitHub Actions: typecheck + build + tests
 ```
 
 ## License
