@@ -1,0 +1,53 @@
+{
+  "name": "@thestreamcode/openclaw-command-code",
+  "version": "0.1.0",
+  "description": "Command Code (commandcode.ai) model provider plugin for OpenClaw with live model discovery",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "command-code",
+    "commandcode",
+    "llm",
+    "provider"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "providers": [
+      "commandcode"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.7.1",
+      "minGatewayVersion": "2026.7.1"
+    },
+    "build": {
+      "openclawVersion": "2026.7.1",
+      "pluginSdkVersion": "2026.7.1"
+    }
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.7.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "rimraf": "^5.0.0",
+    "vitest": "^2.1.0",
+    "openclaw": "2026.7.1-2"
+  }
+}

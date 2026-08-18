@@ -1,0 +1,38 @@
+{
+  "id": "commandcode",
+  "name": "Command Code",
+  "description": "Command Code (commandcode.ai) model provider plugin with live model discovery from the Provider API.",
+  "providers": ["commandcode"],
+  "modelSupport": {
+    "modelPrefixes": ["commandcode/"]
+  },
+  "activation": {
+    "onStartup": false,
+    "onProviders": ["commandcode"]
+  },
+  "setup": {
+    "providers": [
+      {
+        "id": "commandcode",
+        "envVars": ["COMMAND_CODE_API_KEY"]
+      }
+    ]
+  },
+  "providerAuthChoices": [
+    {
+      "provider": "commandcode",
+      "method": "api-key",
+      "choiceId": "commandcode-api-key",
+      "choiceLabel": "Command Code API key",
+      "groupId": "commandcode",
+      "groupLabel": "Command Code",
+      "cliFlag": "--commandcode-api-key",
+      "cliOption": "--commandcode-api-key <key>",
+      "cliDescription": "Command Code API key (Studio > API Keys)"
+    }
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false
+  }
+}
