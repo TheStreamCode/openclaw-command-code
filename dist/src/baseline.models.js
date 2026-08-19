@@ -170,6 +170,11 @@ export const commandCodeBaselineModels = [
         "context_length": 1000000
     },
     {
+        "id": "Qwen/Qwen3.8-27B",
+        "name": "Qwen 3.8 27B",
+        "context_length": 262144
+    },
+    {
         "id": "Qwen/Qwen3.7-Max",
         "name": "Qwen 3.7 Max",
         "context_length": 1000000

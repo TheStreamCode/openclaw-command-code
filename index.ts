@@ -2,7 +2,7 @@
  * Command Code model provider plugin for OpenClaw.
  *
  * Registers an OpenAI/Anthropic-compatible provider backed by the Command Code
- * Provider API (https://commandcode.ai). The model catalog uses a two-tier
+ * Provider API (https://commandcode.ai). The model catalog uses a three-tier
  * strategy:
  *
  *   - `buildStaticProvider`: a bundled baseline snapshot (generated, never

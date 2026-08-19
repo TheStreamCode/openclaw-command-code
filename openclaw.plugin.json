@@ -626,6 +626,24 @@
             }
           },
           {
+            "id": "Qwen/Qwen3.8-27B",
+            "name": "Qwen 3.8 27B",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 262144,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "Qwen/Qwen3.7-Max",
             "name": "Qwen 3.7 Max",
             "api": "openai-completions",
