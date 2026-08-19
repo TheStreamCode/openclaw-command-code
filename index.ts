@@ -10,6 +10,12 @@
  *   - `buildProvider`: the live catalog fetched at runtime from
  *     `GET https://api.commandcode.ai/provider/v1/models` with a short TTL,
  *     keeping models fresh when the gateway is running.
+ *   - `resolveCommandCodeDynamicModel`: a runtime model resolver for ids
+ *     missing from the per-agent registry (models.json). OpenClaw only
+ *     materializes a provider into that registry when its auth can be proven
+ *     at planning time (env var, auth profile, or explicit config); without
+ *     that proof, resolution falls through to this hook instead of failing
+ *     with "Unknown model".
  *
  * Auth: `COMMAND_CODE_API_KEY` (Studio > API Keys). Requires a plan with API
  * access (GOAT / Pro / Max / Team / Provider); the Go plan returns 403
@@ -26,6 +32,7 @@ import type {
   ModelDefinitionConfig,
   ModelProviderConfig,
 } from "openclaw/plugin-sdk/provider-model-types";
+import type { ProviderRuntimeModel } from "openclaw/plugin-sdk/plugin-entry";
 import { commandCodeBaselineModels } from "./src/baseline.models.js";
 
 /** Endpoint that lists available models. Public (no auth required for the list). */
@@ -142,6 +149,51 @@ async function buildStaticProvider(): Promise<ModelProviderConfig> {
   return providerFromRows(commandCodeBaselineModels as CommandCodeModelRow[]);
 }
 
+/** Strips a leading `<provider>/` prefix from a runtime model id when present. */
+function stripProviderModelPrefix(provider: string, modelId: string): string {
+  const prefix = `${provider}/`;
+  return modelId.startsWith(prefix) ? modelId.slice(prefix.length) : modelId;
+}
+
+/**
+ * Resolves commandcode models missing from the local per-agent registry.
+ *
+ * OpenClaw only materializes a provider's models into the agent registry
+ * (models.json) when its auth can be proven at planning time (env var, auth
+ * profile, or explicit config). When that proof is absent, model resolution
+ * falls through to this hook instead of failing with "Unknown model".
+ *
+ * The baseline is consulted synchronously; ids not in the snapshot receive a
+ * conservative provider-neutral definition so newly published models keep
+ * working without a baseline refresh.
+ */
+export function resolveCommandCodeDynamicModel(ctx: {
+  provider?: string;
+  modelId: string;
+}): ProviderRuntimeModel | null {
+  const provider = ctx.provider ?? "commandcode";
+  const modelId = stripProviderModelPrefix(provider, ctx.modelId);
+  const row = commandCodeBaselineModels.find((entry) => entry.id === modelId);
+  const projected = row ? projectModel(row) : null;
+  const claude = isClaudeModel(modelId);
+  const api: ModelApi =
+    projected?.api ?? (claude ? "anthropic-messages" : "openai-completions");
+  const contextWindow = projected?.contextWindow ?? 200_000;
+
+  return {
+    id: modelId,
+    name: projected?.name ?? modelId,
+    api,
+    provider,
+    baseUrl: claude ? ANTHROPIC_BASE_URL : OPENAI_BASE_URL,
+    reasoning: true,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow,
+    maxTokens: Math.min(contextWindow, 131_072),
+  };
+}
+
 export default defineSingleProviderPluginEntry({
   id: "commandcode",
   name: "Command Code",
@@ -171,5 +223,9 @@ export default defineSingleProviderPluginEntry({
       // and is kept fresh at runtime by the live catalog above.
       buildStaticProvider,
     },
+    // Resolves commandcode models that are missing from the per-agent registry
+    // (see resolveCommandCodeDynamicModel) so inference never fails with
+    // "Unknown model" when the planner could not prove auth.
+    resolveDynamicModel: resolveCommandCodeDynamicModel,
   },
 });

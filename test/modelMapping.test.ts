@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { isClaudeModel, projectModel, providerFromRows } from "../index.js";
+import {
+  isClaudeModel,
+  projectModel,
+  providerFromRows,
+  resolveCommandCodeDynamicModel,
+} from "../index.js";
 import { commandCodeBaselineModels } from "../src/baseline.models.js";
 
 describe("isClaudeModel", () => {
@@ -83,5 +88,44 @@ describe("static baseline (pre-credential discovery)", () => {
     expect(apis.has("anthropic-messages")).toBe(true);
     expect(apis.has("openai-completions")).toBe(true);
     expect([...apis].every((a) => a === "anthropic-messages" || a === "openai-completions")).toBe(true);
+  });
+});
+
+describe("resolveCommandCodeDynamicModel", () => {
+  it("resolves a baseline model id to a runtime model definition", () => {
+    const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "deepseek/deepseek-v4-flash" });
+    expect(m).not.toBeNull();
+    expect(m?.id).toBe("deepseek/deepseek-v4-flash");
+    expect(m?.name).toBe("DeepSeek V4 Flash (latest)");
+    expect(m?.provider).toBe("commandcode");
+    expect(m?.api).toBe("openai-completions");
+    expect(m?.baseUrl).toBe("https://api.commandcode.ai/provider/v1");
+    expect(m?.maxTokens).toBeLessThanOrEqual(131072);
+  });
+
+  it("routes Claude ids to anthropic-messages", () => {
+    const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "claude-sonnet-5" });
+    expect(m?.api).toBe("anthropic-messages");
+  });
+
+  it("strips a leading provider prefix from the model id", () => {
+    const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "commandcode/gpt-5.6-luna" });
+    expect(m?.id).toBe("gpt-5.6-luna");
+    expect(m?.api).toBe("openai-completions");
+  });
+
+  it("falls back to conservative defaults for unknown ids", () => {
+    const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "some/future-model" });
+    expect(m?.id).toBe("some/future-model");
+    expect(m?.name).toBe("some/future-model");
+    expect(m?.api).toBe("openai-completions");
+    expect(m?.contextWindow).toBe(200000);
+    expect(m?.maxTokens).toBe(131072);
+    expect(m?.input).toEqual(["text"]);
+  });
+
+  it("derives the Claude route by id convention for unknown ids", () => {
+    const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "claude-future-model" });
+    expect(m?.api).toBe("anthropic-messages");
   });
 });
