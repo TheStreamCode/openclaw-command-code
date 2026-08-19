@@ -29,10 +29,11 @@ Command Code (commandcode.ai) model provider plugin for OpenClaw, with three-tie
 
 ## Testing instructions
 
-- Unit tests: `npm test` (Vitest, `test/modelMapping.test.ts`)
+- Unit tests: `npm test` (Vitest, `test/modelMapping.test.ts`) — covers the projection, the dynamic model resolver, and a drift guard that compares the manifest `modelCatalog` against the baseline projection
 - Discovery smoke: `node scripts/smoke.discovery.mjs` (hits the live public endpoint)
 - Live inference: `node scripts/live-test.mjs` (reads the key from `~/.openclaw/secrets/providers.json`, never prints it)
-- Baseline refresh: `node scripts/generate-baseline.mjs` (rewrites `src/baseline.models.ts` **and** the `modelCatalog` block of `openclaw.plugin.json` from the same projection as `projectModel` in `index.ts` — keep the two in sync)
+- Baseline refresh: `node scripts/generate-baseline.mjs` (rewrites `src/baseline.models.ts` **and** the `modelCatalog` block of `openclaw.plugin.json` from the same projection as `projectModel` in `index.ts` — keep the two in sync), then `npm run build` to refresh `dist/`
+- CI also fails when the committed `dist/` does not match a fresh build — always rebuild before committing source changes
 - Add tests for every new behavior; all tests must pass before opening a PR
 
 ## PR & commit conventions

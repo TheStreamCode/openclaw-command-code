@@ -5,6 +5,15 @@
   "type": "module",
   "license": "MIT",
   "private": false,
+  "author": "TheStreamCode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheStreamCode/openclaw-command-code.git"
+  },
+  "homepage": "https://github.com/TheStreamCode/openclaw-command-code#readme",
+  "bugs": {
+    "url": "https://github.com/TheStreamCode/openclaw-command-code/issues"
+  },
   "main": "./dist/index.js",
   "files": [
     "dist",

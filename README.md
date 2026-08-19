@@ -1,5 +1,7 @@
 # openclaw-command-code
 
+[![CI](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml)
+
 Command Code ([commandcode.ai](https://commandcode.ai)) model provider plugin for
 OpenClaw, with **three-tier model resolution**: a generated static baseline for
 pre-credential discovery, a live catalog refreshed at runtime, and a dynamic
@@ -102,6 +104,27 @@ Then select a model, e.g.:
 openclaw config set agents.defaults.model.primary "commandcode/deepseek/deepseek-v4-flash"
 ```
 
+## Compatibility
+
+Verified against the live Provider API through OpenClaw's OpenAI-compatible
+transport (endpoint class `custom`, payload captured and inspected):
+
+- **Tool calls**: OpenAI function-calling format (`tools`, `tool_choice`,
+  `tool_calls` results) — full tool loops work in agent runs.
+- **Reasoning levels**: OpenClaw `--thinking` levels are sent as
+  `reasoning_effort` (+ `thinking: {"type": "enabled"}`) and accepted;
+  reasoning content is streamed back in `reasoning`/`reasoning_details`.
+- **Streaming + usage**: SSE streaming with `stream_options.include_usage`;
+  token usage and prompt-cache hits (`cacheRead`) are accounted.
+- **Output budgets**: both `max_completion_tokens` and `max_tokens` are
+  accepted by the endpoint.
+- **Transport routing**: `claude-*` ids use Anthropic Messages
+  (`/provider/v1/messages`); every other model uses OpenAI Chat Completions
+  (`/provider/v1/chat/completions`).
+
+Model availability depends on your Command Code plan: models outside the plan
+return HTTP `403 MODEL_NOT_IN_PLAN` (see Troubleshooting).
+
 ## Model resolution
 
 The static baseline, the manifest catalog, and the live catalog share one
@@ -127,12 +150,25 @@ conservative provider-neutral definition (by `claude-*` transport convention
 where applicable), so newly published models work without re-installing the
 plugin or refreshing the baseline.
 
+## Troubleshooting
+
+- **`No API key found for provider "commandcode"`** — inference requires a
+  resolvable key. Configure one as shown in [Configure auth](#configure-auth)
+  and check `openclaw models auth list`.
+- **HTTP `403 MODEL_NOT_IN_PLAN`** — the selected model is not included in
+  your Command Code plan. Pick a model your plan covers, or upgrade the plan /
+  enable on-demand usage on commandcode.ai.
+- **HTTP `403 upgrade_required`** — the Go plan has no Provider API access.
+- **Model missing from `models list`** — refresh the bundled snapshot with
+  `node scripts/generate-baseline.mjs` (the live catalog picks new models up
+  automatically at runtime anyway).
+
 ## Develop / Test
 
 ```bash
 npm install
 npm run build      # tsc -> dist/index.js
-npm test           # vitest: transport + projection + dynamic resolution
+npm test           # vitest: projection, dynamic resolution, manifest drift guard
 node scripts/generate-baseline.mjs   # refresh baseline + manifest modelCatalog
 node scripts/smoke.discovery.mjs     # static(pre-credential) + live discovery smoke
 node scripts/live-test.mjs           # live inference (reads the key from ~/.openclaw/secrets/providers.json)
@@ -147,9 +183,10 @@ TypeScript-source fallback only applies to local dev paths (`plugins.load.paths`
 `prepack` script also builds it for npm publish).
 
 A GitHub Actions workflow (`.github/workflows/ci.yml`) runs type-check, build,
-and unit tests on every push to `main` and on pull requests. Updates to this
-tooling are applied manually on purpose — there is no Dependabot or any other
-automatic update / notification bot configured.
+unit tests, and a freshness check that fails when the committed `dist/` does
+not match the TypeScript sources, on every push to `main` and on pull
+requests. Updates to this tooling are applied manually on purpose — there is
+no Dependabot or any other automatic update / notification bot configured.
 
 ## Publish (optional)
 
@@ -169,11 +206,13 @@ src/baseline.models.ts       # generated baseline snapshot (never hand-edited)
 openclaw.plugin.json         # manifest (provider id, auth env var, onboarding choice, modelCatalog)
 package.json                 # package + openclaw extension metadata
 LICENSE                      # MIT
-test/modelMapping.test.ts    # vitest unit tests (transport, projection, dynamic resolution)
+test/modelMapping.test.ts    # vitest unit tests (projection, dynamic resolution, manifest drift guard)
 scripts/generate-baseline.mjs # rewrites the baseline module + manifest modelCatalog
 scripts/smoke.discovery.mjs   # live discovery smoke test against the public endpoint
 scripts/live-test.mjs         # live inference test using the stored key (never printed)
-.github/workflows/ci.yml      # GitHub Actions: typecheck + build + tests
+.github/workflows/ci.yml      # GitHub Actions: typecheck + build + dist freshness + tests
+.gitattributes                 # LF normalization
+AGENTS.md                      # agent-oriented project guide
 ```
 
 ## License
