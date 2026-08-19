@@ -1,6 +1,8 @@
 # openclaw-command-code
 
 [![CI](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml)
+[![ClawHub](https://img.shields.io/badge/ClawHub-%40thestreamcode%2Fopenclaw--command--code-blue)](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code)
+[![Sponsor](https://img.shields.io/badge/GitHub-Sponsors-ff69b4)](https://github.com/sponsors/TheStreamCode)
 
 Command Code ([commandcode.ai](https://commandcode.ai)) model provider plugin for
 OpenClaw, with **three-tier model resolution**: a generated static baseline for
@@ -51,10 +53,19 @@ node scripts/generate-baseline.mjs
 
 ## Install
 
+From [ClawHub](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code)
+(recommended):
+
+```bash
+openclaw plugins install clawhub:@thestreamcode/openclaw-command-code
+```
+
 From GitHub (requires the committed `dist/` runtime in the repo):
 
 ```bash
 openclaw plugins install git:github.com/TheStreamCode/openclaw-command-code
+# or pinned to a release
+openclaw plugins install git:github.com/TheStreamCode/openclaw-command-code@v0.1.0
 ```
 
 From a local checkout:
@@ -189,14 +200,15 @@ not match the TypeScript sources, on every push to `main` and on pull
 requests. Updates to this tooling are applied manually on purpose — there is
 no Dependabot or any other automatic update / notification bot configured.
 
-## Publish (optional)
+## Publish (maintainers)
 
-To make it discoverable on ClawHub:
+The plugin is published on
+[ClawHub](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code).
+To publish a new version (requires `clawhub login`):
 
 ```bash
-clawhub login
-clawhub package publish TheStreamCode/openclaw-command-code --dry-run
-clawhub package publish TheStreamCode/openclaw-command-code
+clawhub package publish TheStreamCode/openclaw-command-code --family code-plugin --dry-run
+clawhub package publish TheStreamCode/openclaw-command-code --family code-plugin
 ```
 
 ## Files
@@ -215,6 +227,11 @@ scripts/live-test.mjs         # live inference test using the stored key (never 
 .gitattributes                 # LF normalization
 AGENTS.md                      # agent-oriented project guide
 ```
+
+## Support
+
+If this plugin is useful to you, consider
+[sponsoring the maintainer on GitHub](https://github.com/sponsors/TheStreamCode).
 
 ## License
 
