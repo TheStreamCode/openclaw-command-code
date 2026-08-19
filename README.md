@@ -68,8 +68,9 @@ openclaw plugins install --link ./command-code-plugin-openclaw
 
 ## Configure auth
 
-Set the API key from [commandcode.ai Studio > API Keys](https://commandcode.ai/studio).
-Keys are strings starting with `user_`; treat them as secrets.
+Set the API key from [commandcode.ai Studio > API Keys](https://commandcode.ai/settings/keys);
+treat it as a secret. The same key authenticates both the Command Code CLI and
+the Provider API.
 
 Pick one of these methods — the key must be resolvable **at inference time**
 through either the env var, an auth profile, or an explicit provider config:
@@ -217,4 +218,4 @@ AGENTS.md                      # agent-oriented project guide
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](LICENSE).
