@@ -47,9 +47,15 @@ node scripts/generate-baseline.mjs
   (GOAT / Pro / Max / Team / Provider). The **Go** plan has no API access and
   any request returns HTTP `403 upgrade_required`.
 
-## Install (local dev)
+## Install
 
-From this directory:
+From GitHub (requires the committed `dist/` runtime in the repo):
+
+```bash
+openclaw plugins install git:github.com/TheStreamCode/openclaw-command-code
+```
+
+From a local checkout:
 
 ```bash
 # with a local path (developing/testing)
@@ -134,8 +140,11 @@ node scripts/live-test.mjs           # live inference (reads the key from ~/.ope
 
 The repo intentionally ships **no TypeScript `.d.ts`**: the plugin is consumed
 as a runtime entry (`dist/index.js`), not as a typed library, and an exported
-definition type would not be portable. `dist/` itself is git-ignored and built
-before install/publish.
+definition type would not be portable. `dist/` is **committed** because
+OpenClaw git/package installs require the compiled runtime — the
+TypeScript-source fallback only applies to local dev paths (`plugins.load.paths`,
+`--link`). Regenerate it with `npm run build` after any source change (the
+`prepack` script also builds it for npm publish).
 
 A GitHub Actions workflow (`.github/workflows/ci.yml`) runs type-check, build,
 and unit tests on every push to `main` and on pull requests. Updates to this

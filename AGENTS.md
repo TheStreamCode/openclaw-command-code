@@ -17,7 +17,9 @@ Command Code (commandcode.ai) model provider plugin for OpenClaw, with three-tie
 - `test/` — Vitest unit tests (transport + projection + dynamic resolution)
 - `scripts/` — Node `.mjs` utilities (`generate-baseline.mjs`, `smoke.discovery.mjs`, `live-test.mjs`)
 - `.github/workflows/` — CI (typecheck + build + tests)
-- `dist/` — build output, git-ignored
+- `dist/` — build output, **committed**: OpenClaw git/package installs require the compiled runtime (`./dist/index.js`); the TypeScript-source fallback only applies to local dev paths (`plugins.load.paths`, `--link`). Regenerate with `npm run build` before committing.
+- `openclaw.plugin.json` — manifest (provider id, auth env var, onboarding choice, modelCatalog)
+- `package.json` — package + openclaw extension metadata (`prepack` builds dist for npm publish)
 
 ## Code style
 

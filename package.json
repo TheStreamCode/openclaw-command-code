@@ -33,7 +33,7 @@
   ],
   "openclaw": {
     "extensions": [
-      "./index.ts"
+      "./dist/index.js"
     ],
     "providers": [
       "commandcode"
