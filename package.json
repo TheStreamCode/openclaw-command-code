@@ -26,11 +26,6 @@
     "llm",
     "provider"
   ],
-  "files": [
-    "dist",
-    "openclaw.plugin.json",
-    "README.md"
-  ],
   "openclaw": {
     "extensions": [
       "./dist/index.js"
