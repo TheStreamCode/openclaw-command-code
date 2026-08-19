@@ -6,6 +6,7 @@ import {
   resolveCommandCodeDynamicModel,
 } from "../index.js";
 import { commandCodeBaselineModels } from "../src/baseline.models.js";
+import manifest from "../openclaw.plugin.json";
 
 describe("isClaudeModel", () => {
   it("detects Claude ids by convention", () => {
@@ -127,5 +128,39 @@ describe("resolveCommandCodeDynamicModel", () => {
   it("derives the Claude route by id convention for unknown ids", () => {
     const m = resolveCommandCodeDynamicModel({ provider: "commandcode", modelId: "claude-future-model" });
     expect(m?.api).toBe("anthropic-messages");
+  });
+});
+
+describe("manifest modelCatalog (drift guard)", () => {
+  const catalog = manifest.modelCatalog.providers.commandcode;
+  const projected = providerFromRows(commandCodeBaselineModels);
+
+  it("mirrors the baseline projection model by model", () => {
+    expect(catalog.models.length).toBe(projected.models.length);
+    const byId = new Map(projected.models.map((m) => [m.id, m]));
+    for (const entry of catalog.models) {
+      const expected = byId.get(entry.id);
+      expect(expected, `manifest model ${entry.id} missing from baseline projection`).toBeDefined();
+      expect(entry.name).toBe(expected?.name);
+      expect(entry.api).toBe(expected?.api);
+      expect(entry.baseUrl).toBe(expected?.baseUrl);
+      expect(entry.reasoning).toBe(expected?.reasoning);
+      expect(entry.input).toEqual(expected?.input);
+      expect(entry.contextWindow).toBe(expected?.contextWindow);
+      expect(entry.maxTokens).toBe(expected?.maxTokens);
+      expect(entry.cost).toEqual(expected?.cost);
+    }
+  });
+
+  it("keeps ids in the same order as the baseline", () => {
+    expect(catalog.models.map((m) => m.id)).toEqual(
+      commandCodeBaselineModels.map((r) => r.id),
+    );
+  });
+
+  it("declares static discovery and the provider-level transport", () => {
+    expect(manifest.modelCatalog.discovery.commandcode).toBe("static");
+    expect(catalog.baseUrl).toBe("https://api.commandcode.ai/provider/v1");
+    expect(catalog.api).toBe("openai-completions");
   });
 });
