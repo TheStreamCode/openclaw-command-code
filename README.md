@@ -135,7 +135,10 @@ transport (endpoint class `custom`, payload captured and inspected):
   (`/provider/v1/chat/completions`).
 
 Model availability depends on your Command Code plan: models outside the plan
-return HTTP `403 MODEL_NOT_IN_PLAN` (see Troubleshooting).
+return HTTP `403 MODEL_NOT_IN_PLAN` (see Troubleshooting). This error is
+verified against the live Provider API but is not listed in the public error
+table on the [Provider API docs](https://commandcode.ai/docs/provider#errors),
+which only covers the common cases.
 
 ## Model resolution
 
@@ -169,7 +172,9 @@ plugin or refreshing the baseline.
   and check `openclaw models auth list`.
 - **HTTP `403 MODEL_NOT_IN_PLAN`** — the selected model is not included in
   your Command Code plan. Pick a model your plan covers, or upgrade the plan /
-  enable on-demand usage on commandcode.ai.
+  enable on-demand usage on commandcode.ai. Verified against the live Provider
+  API (e.g. `claude-*` models on a GOAT key), though not listed in the public
+  error table on the [Provider API docs](https://commandcode.ai/docs/provider#errors).
 - **HTTP `403 upgrade_required`** — the Go plan has no Provider API access.
 - **Model missing from `models list`** — refresh the bundled snapshot with
   `node scripts/generate-baseline.mjs` (the live catalog picks new models up
