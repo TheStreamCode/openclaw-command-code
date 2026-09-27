@@ -86,8 +86,44 @@
             }
           },
           {
+            "id": "claude-fable-5-1",
+            "name": "Claude Fable 5.1",
+            "api": "anthropic-messages",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "claude-fable-5",
             "name": "Claude Fable 5",
+            "api": "anthropic-messages",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "claude-opus-5-5",
+            "name": "Claude Opus 5.5",
             "api": "anthropic-messages",
             "baseUrl": "https://api.commandcode.ai/provider/v1",
             "reasoning": true,
@@ -176,6 +212,60 @@
             }
           },
           {
+            "id": "gpt-6-astra",
+            "name": "GPT-6 Astra",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1050000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "gpt-6-sol",
+            "name": "GPT-6 Sol",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1050000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "gpt-6-luna",
+            "name": "GPT-6 Luna",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1050000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "gpt-5.6-sol",
             "name": "GPT-5.6 Sol",
             "api": "openai-completions",
@@ -238,7 +328,7 @@
             "input": [
               "text"
             ],
-            "contextWindow": 200000,
+            "contextWindow": 400000,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -338,6 +428,60 @@
             }
           },
           {
+            "id": "deepseek/deepseek-v4-flash-vision-exp",
+            "name": "DeepSeek V4 Flash Vision (exp)",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "deepseek/deepseek-v4-flash-fast",
+            "name": "DeepSeek V4 Flash Fast",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "deepseek/deepseek-v4.1-flash",
+            "name": "DeepSeek V4.1 Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "moonshotai/Kimi-K3",
             "name": "Kimi K3",
             "api": "openai-completions",
@@ -419,6 +563,42 @@
               "text"
             ],
             "contextWindow": 256000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "z-ai/glm-5.3-flash",
+            "name": "GLM-5.3 Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "z-ai/glm-5.3-flashx",
+            "name": "GLM-5.3 FlashX",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -572,6 +752,60 @@
             }
           },
           {
+            "id": "xiaomi/mimo-v2.6-pro",
+            "name": "MiMo V2.6 Pro",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "xiaomi/mimo-v2.6-pro-ultraspeed",
+            "name": "MiMo V2.6 Pro UltraSpeed",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "xiaomi/mimo-v2.6-flash",
+            "name": "MiMo V2.6 Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "xiaomi/mimo-v2.5-pro",
             "name": "MiMo V2.5 Pro",
             "api": "openai-completions",
@@ -592,6 +826,42 @@
           {
             "id": "xiaomi/mimo-v2.5",
             "name": "MiMo V2.5",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "Qwen/Qwen3.8-Omni-Flash",
+            "name": "Qwen 3.8 Omni Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "Qwen/Qwen3.8-Max-0902",
+            "name": "Qwen 3.8 Max 0902",
             "api": "openai-completions",
             "baseUrl": "https://api.commandcode.ai/provider/v1",
             "reasoning": true,
@@ -635,6 +905,24 @@
               "text"
             ],
             "contextWindow": 262144,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "Qwen/Qwen3.8-Flash",
+            "name": "Qwen 3.8 Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -734,6 +1022,42 @@
             }
           },
           {
+            "id": "meituan/LongCat-2.0",
+            "name": "LongCat 2.0",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "stepfun/Step-5-Preview",
+            "name": "Step 5 Preview",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "stepfun/Step-3.7-Flash",
             "name": "Step 3.7 Flash",
             "api": "openai-completions",
@@ -760,7 +1084,7 @@
             "input": [
               "text"
             ],
-            "contextWindow": 1000000,
+            "contextWindow": 262144,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -779,6 +1103,42 @@
               "text"
             ],
             "contextWindow": 262144,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "tencent/hy4-preview",
+            "name": "Tencent Hy4 Preview",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "google/gemini-3.8-flash",
+            "name": "Gemini 3.8 Flash",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -950,6 +1310,42 @@
             }
           },
           {
+            "id": "stealth/space-bunny-alpha",
+            "name": "Space Bunny Alpha",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1000000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "stealth/pixel-canary",
+            "name": "Pixel Canary",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 262144,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "poolside/laguna-s-2.1-free",
             "name": "Laguna S 2.1",
             "api": "openai-completions",
@@ -959,6 +1355,24 @@
               "text"
             ],
             "contextWindow": 256000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "inclusionai/ling-3.0-flash-sante:free",
+            "name": "Ling 3.0 Flash Sante",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 262144,
             "maxTokens": 131072,
             "cost": {
               "input": 0,
@@ -1022,6 +1436,42 @@
             }
           },
           {
+            "id": "meta/muse-spark-1.3",
+            "name": "Muse Spark 1.3",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "meta/muse-spark-1.3-contributor",
+            "name": "Muse Spark 1.3 Contributor",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 1048576,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
             "id": "xai/grok-4.5",
             "name": "Grok 4.5",
             "api": "openai-completions",
@@ -1042,6 +1492,24 @@
           {
             "id": "xai/grok-4.6",
             "name": "Grok 4.6",
+            "api": "openai-completions",
+            "baseUrl": "https://api.commandcode.ai/provider/v1",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "contextWindow": 500000,
+            "maxTokens": 131072,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            }
+          },
+          {
+            "id": "xai/grok-4.7",
+            "name": "Grok 4.7",
             "api": "openai-completions",
             "baseUrl": "https://api.commandcode.ai/provider/v1",
             "reasoning": true,
