@@ -20,8 +20,18 @@ export const commandCodeBaselineModels = [
         "context_length": 1000000
     },
     {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "context_length": 1000000
+    },
+    {
         "id": "claude-fable-5",
         "name": "Claude Fable 5",
+        "context_length": 1000000
+    },
+    {
+        "id": "claude-opus-5-5",
+        "name": "Claude Opus 5.5",
         "context_length": 1000000
     },
     {
@@ -45,6 +55,21 @@ export const commandCodeBaselineModels = [
         "context_length": 200000
     },
     {
+        "id": "gpt-6-astra",
+        "name": "GPT-6 Astra",
+        "context_length": 1050000
+    },
+    {
+        "id": "gpt-6-sol",
+        "name": "GPT-6 Sol",
+        "context_length": 1050000
+    },
+    {
+        "id": "gpt-6-luna",
+        "name": "GPT-6 Luna",
+        "context_length": 1050000
+    },
+    {
         "id": "gpt-5.6-sol",
         "name": "GPT-5.6 Sol",
         "context_length": 1050000
@@ -62,7 +87,7 @@ export const commandCodeBaselineModels = [
     {
         "id": "gpt-5.5",
         "name": "GPT-5.5",
-        "context_length": 200000
+        "context_length": 400000
     },
     {
         "id": "gpt-5.4",
@@ -90,6 +115,21 @@ export const commandCodeBaselineModels = [
         "context_length": 1000000
     },
     {
+        "id": "deepseek/deepseek-v4-flash-vision-exp",
+        "name": "DeepSeek V4 Flash Vision (exp)",
+        "context_length": 1000000
+    },
+    {
+        "id": "deepseek/deepseek-v4-flash-fast",
+        "name": "DeepSeek V4 Flash Fast",
+        "context_length": 1000000
+    },
+    {
+        "id": "deepseek/deepseek-v4.1-flash",
+        "name": "DeepSeek V4.1 Flash",
+        "context_length": 1000000
+    },
+    {
         "id": "moonshotai/Kimi-K3",
         "name": "Kimi K3",
         "context_length": 1000000
@@ -113,6 +153,16 @@ export const commandCodeBaselineModels = [
         "id": "moonshotai/Kimi-K2.5",
         "name": "Kimi K2.5",
         "context_length": 256000
+    },
+    {
+        "id": "z-ai/glm-5.3-flash",
+        "name": "GLM-5.3 Flash",
+        "context_length": 1048576
+    },
+    {
+        "id": "z-ai/glm-5.3-flashx",
+        "name": "GLM-5.3 FlashX",
+        "context_length": 1000000
     },
     {
         "id": "zai-org/GLM-5.3",
@@ -155,6 +205,21 @@ export const commandCodeBaselineModels = [
         "context_length": 200000
     },
     {
+        "id": "xiaomi/mimo-v2.6-pro",
+        "name": "MiMo V2.6 Pro",
+        "context_length": 1048576
+    },
+    {
+        "id": "xiaomi/mimo-v2.6-pro-ultraspeed",
+        "name": "MiMo V2.6 Pro UltraSpeed",
+        "context_length": 1048576
+    },
+    {
+        "id": "xiaomi/mimo-v2.6-flash",
+        "name": "MiMo V2.6 Flash",
+        "context_length": 1048576
+    },
+    {
         "id": "xiaomi/mimo-v2.5-pro",
         "name": "MiMo V2.5 Pro",
         "context_length": 1000000
@@ -162,6 +227,16 @@ export const commandCodeBaselineModels = [
     {
         "id": "xiaomi/mimo-v2.5",
         "name": "MiMo V2.5",
+        "context_length": 1000000
+    },
+    {
+        "id": "Qwen/Qwen3.8-Omni-Flash",
+        "name": "Qwen 3.8 Omni Flash",
+        "context_length": 1000000
+    },
+    {
+        "id": "Qwen/Qwen3.8-Max-0902",
+        "name": "Qwen 3.8 Max 0902",
         "context_length": 1000000
     },
     {
@@ -173,6 +248,11 @@ export const commandCodeBaselineModels = [
         "id": "Qwen/Qwen3.8-27B",
         "name": "Qwen 3.8 27B",
         "context_length": 262144
+    },
+    {
+        "id": "Qwen/Qwen3.8-Flash",
+        "name": "Qwen 3.8 Flash",
+        "context_length": 1000000
     },
     {
         "id": "Qwen/Qwen3.7-Max",
@@ -200,6 +280,16 @@ export const commandCodeBaselineModels = [
         "context_length": 200000
     },
     {
+        "id": "meituan/LongCat-2.0",
+        "name": "LongCat 2.0",
+        "context_length": 1048576
+    },
+    {
+        "id": "stepfun/Step-5-Preview",
+        "name": "Step 5 Preview",
+        "context_length": 1000000
+    },
+    {
         "id": "stepfun/Step-3.7-Flash",
         "name": "Step 3.7 Flash",
         "context_length": 256000
@@ -207,12 +297,22 @@ export const commandCodeBaselineModels = [
     {
         "id": "stepfun/Step-3.5-Flash",
         "name": "Step 3.5 Flash",
-        "context_length": 1000000
+        "context_length": 262144
     },
     {
         "id": "tencent/hy3-paid",
         "name": "Tencent Hy3",
         "context_length": 262144
+    },
+    {
+        "id": "tencent/hy4-preview",
+        "name": "Tencent Hy4 Preview",
+        "context_length": 1048576
+    },
+    {
+        "id": "google/gemini-3.8-flash",
+        "name": "Gemini 3.8 Flash",
+        "context_length": 1000000
     },
     {
         "id": "google/gemini-3.7-flash",
@@ -260,9 +360,24 @@ export const commandCodeBaselineModels = [
         "context_length": 1000000
     },
     {
+        "id": "stealth/space-bunny-alpha",
+        "name": "Space Bunny Alpha",
+        "context_length": 1000000
+    },
+    {
+        "id": "stealth/pixel-canary",
+        "name": "Pixel Canary",
+        "context_length": 262144
+    },
+    {
         "id": "poolside/laguna-s-2.1-free",
         "name": "Laguna S 2.1",
         "context_length": 256000
+    },
+    {
+        "id": "inclusionai/ling-3.0-flash-sante:free",
+        "name": "Ling 3.0 Flash Sante",
+        "context_length": 262144
     },
     {
         "id": "meta/muse-spark-1.1",
@@ -280,6 +395,16 @@ export const commandCodeBaselineModels = [
         "context_length": 1048576
     },
     {
+        "id": "meta/muse-spark-1.3",
+        "name": "Muse Spark 1.3",
+        "context_length": 1048576
+    },
+    {
+        "id": "meta/muse-spark-1.3-contributor",
+        "name": "Muse Spark 1.3 Contributor",
+        "context_length": 1048576
+    },
+    {
         "id": "xai/grok-4.5",
         "name": "Grok 4.5",
         "context_length": 500000
@@ -287,6 +412,11 @@ export const commandCodeBaselineModels = [
     {
         "id": "xai/grok-4.6",
         "name": "Grok 4.6",
+        "context_length": 500000
+    },
+    {
+        "id": "xai/grok-4.7",
+        "name": "Grok 4.7",
         "context_length": 500000
     }
 ];
