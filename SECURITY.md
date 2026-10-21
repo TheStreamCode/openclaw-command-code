@@ -2,19 +2,44 @@
 
 ## Supported versions
 
-Security fixes target the latest published release and the current `main` branch.
+Security fixes are shipped for the latest release only.
+
+| Version | Supported |
+| --- | --- |
+| Latest release | Yes |
+| Older releases | No |
 
 ## Reporting a vulnerability
 
-This plugin handles API keys at inference time. Report security issues privately:
-use GitHub's **private vulnerability reporting** (Security Advisories) on this
-repository. If that route is unavailable, email `info@mikesoft.it` with the
-subject `openclaw-command-code Security Report`. Do not open a public issue for
-sensitive findings.
+Do not open a public issue for a security problem. Report it privately through
+[GitHub Security Advisories](../../security/advisories/new) on this repository.
 
-## Credential handling
+Include:
 
-The Command Code API key belongs in the environment or your auth profile
-(`COMMAND_CODE_API_KEY`). Never commit keys, tokens, or account data to this
-repository, and never paste real credentials into issues, pull requests, or
-test fixtures.
+- affected version and platform;
+- a description of the issue and its impact;
+- reproduction steps or a proof of concept;
+- any mitigation you already know about.
+
+You can expect an initial acknowledgement within 7 days and a status update within 30 days. If the
+report is valid, a fix is prepared privately and disclosed in the release notes once a patched
+version is available. Credit is given in the advisory unless you ask otherwise.
+
+## Scope
+
+In scope:
+
+- defects in this repository's code, build scripts or release artifacts;
+- credential or secret exposure caused by this project;
+- privilege or sandbox escapes in code shipped by this project.
+
+Out of scope:
+
+- vulnerabilities in third-party products this project integrates with (report them upstream);
+- misconfiguration of a user's environment;
+- social engineering, spam or denial-of-service against third-party services.
+
+## Handling of credentials
+
+This project never asks for credentials in issues, pull requests or logs. Do not paste tokens,
+cookies or personal access tokens in a report. Redact secrets from logs before attaching them.

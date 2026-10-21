@@ -1,243 +1,173 @@
 # openclaw-command-code
 
+Command Code model provider for OpenClaw with three-tier model resolution
+
 [![CI](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/openclaw-command-code/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![ClawHub](https://img.shields.io/badge/ClawHub-%40thestreamcode%2Fopenclaw--command--code-blue)](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code)
-[![Sponsor](https://img.shields.io/badge/GitHub-Sponsors-ff69b4)](https://github.com/sponsors/TheStreamCode)
 
-Command Code ([commandcode.ai](https://commandcode.ai)) model provider plugin for
-OpenClaw, with **three-tier model resolution**: a generated static baseline for
-pre-credential discovery, a live catalog refreshed at runtime, and a dynamic
-resolver for models missing from the per-agent registry.
+Command Code ([commandcode.ai](https://commandcode.ai)) model provider plugin for OpenClaw. The
+plugin registers a `commandcode` provider with three-tier model resolution: a generated static
+baseline for pre-credential discovery, a live catalog refreshed at runtime, and a dynamic resolver
+for models missing from the per-agent registry.
 
-## What it does
-
-- Registers a `commandcode` model provider in OpenClaw.
-- **Static baseline** (`src/baseline.models.ts`, generated — never hand-edited):
-  exposes models for cheap discovery **before a key is configured**, so
-  `models list --provider commandcode` / `/model` can show them without a
-  resolved credential or a running gateway. The manifest
-  (`openclaw.plugin.json`) ships the same snapshot in its `modelCatalog`
-  block, so the CLI listing also works for non-bundled plugin installs.
-- **Live catalog**: fetches the current model list at runtime from
-  `GET https://api.commandcode.ai/provider/v1/models` (a public endpoint) with
-  a short TTL, keeping the catalog fresh when the gateway is running. The live
-  endpoint is the single source of truth; the baseline is just its snapshot.
-- **Dynamic runtime resolution**: OpenClaw only materializes a provider into
-  the per-agent model registry (`models.json`) when it can prove auth (env
-  var, auth profile, or explicit config). A `resolveDynamicModel` hook answers
-  model resolution from the bundled baseline instead, so inference never
-  fails with `Unknown model` for commandcode models.
-- Routes each model to the correct transport:
-  - `claude-*` → **Anthropic Messages** (`/provider/v1/messages`)
-  - every other model → **OpenAI Chat Completions** (`/provider/v1/chat/completions`)
-- Refreshes the catalog with a short TTL so new/removed models propagate.
-
-## Regenerating the baseline
-
-The bundled baseline is generated from the live endpoint, not maintained by
-hand. The script rewrites both `src/baseline.models.ts` and the `modelCatalog`
-block of `openclaw.plugin.json` from the same fetched rows, using the same
-projection as `projectModel` in `index.ts`. Refresh them when the provider
-catalog changes:
-
-```bash
-node scripts/generate-baseline.mjs
-```
-
-## Requirements
-
-- OpenClaw >= 2026.7.1.
-- A Command Code account on a plan **with Provider API access**
-  (GOAT / Pro / Max / Team / Provider). The **Go** plan has no API access and
-  any request returns HTTP `403 upgrade_required`.
+This is an independent, unofficial integration. It is not affiliated with, endorsed by, sponsored
+by, or approved by Command Code or OpenClaw.
 
 ## Install
 
-From [ClawHub](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code)
-(recommended):
+From [ClawHub](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code) (recommended):
 
 ```bash
 openclaw plugins install clawhub:@thestreamcode/openclaw-command-code
 ```
 
-From GitHub (requires the committed `dist/` runtime in the repo):
+From GitHub (requires the committed `dist/` runtime in the repository):
 
 ```bash
 openclaw plugins install git:github.com/TheStreamCode/openclaw-command-code
-# or pinned to a release
-openclaw plugins install git:github.com/TheStreamCode/openclaw-command-code@v0.1.0
 ```
+
+Append `@<release-tag>` to the repository reference to pin a release.
 
 From a local checkout:
 
 ```bash
-# with a local path (developing/testing)
-openclaw plugins install ./command-code-plugin-openclaw
-# or a symlinked dev checkout
-openclaw plugins install --link ./command-code-plugin-openclaw
+openclaw plugins install --link .
 ```
 
-## Configure auth
+## Quick start
 
-Set the API key from [commandcode.ai Studio > API Keys](https://commandcode.ai/settings/keys);
-treat it as a secret. The same key authenticates both the Command Code CLI and
-the Provider API.
+1. Create an API key in [commandcode.ai Studio > API Keys](https://commandcode.ai/settings/keys)
+   and treat it as a secret. The same key authenticates the Command Code CLI and the Provider API.
+2. Make the key resolvable at inference time through one of the supported methods:
 
-Pick one of these methods — the key must be resolvable **at inference time**
-through either the env var, an auth profile, or an explicit provider config:
+   ```bash
+   # 1) environment variable, also picked up by the gateway process
+   export COMMAND_CODE_API_KEY=user_...
 
-```bash
-# 1) env var (also picked up by the gateway process)
-export COMMAND_CODE_API_KEY=user_...
+   # 2) auth profile, persisted in the agent credential store
+   openclaw models auth paste-api-key --provider commandcode --profile-id commandcode:default
+   #    ... paste the key on stdin
 
-# 2) auth profile (persists the key in the agent credential store)
-openclaw models auth paste-api-key --provider commandcode --profile-id commandcode:default
-#    ... paste the key on stdin
+   # 3) explicit provider configuration, using the environment variable name
+   openclaw config set 'models.providers.commandcode.apiKey' COMMAND_CODE_API_KEY
+   ```
 
-# 3) explicit provider config (env var name as the apiKey marker)
-openclaw config set 'models.providers.commandcode.apiKey' COMMAND_CODE_API_KEY
-```
+3. Verify discovery and select a model:
 
-Model **discovery** works without a key (the `/models` endpoint is public),
-but inference requires it. Check the profile state with
-`openclaw models auth list`.
+   ```bash
+   openclaw models list --provider commandcode
+   openclaw config set agents.defaults.model.primary "commandcode/deepseek/deepseek-v4-flash"
+   openclaw agent --local --agent main --model commandcode/deepseek/deepseek-v4-flash --message "hi"
+   ```
 
-## Verify
+Model discovery works without a key because the `/models` endpoint is public; inference requires
+the key. Check the auth profile state with `openclaw models auth list`.
 
-```bash
-openclaw models list --provider commandcode
-openclaw plugins inspect commandcode --runtime --json
-openclaw agent --local --agent main --model commandcode/deepseek/deepseek-v4-flash --message "hi"
-```
+## Features
 
-Then select a model, e.g.:
+- Registers the `commandcode` provider in OpenClaw.
+- Ships a generated static baseline (`src/baseline.models.ts`, never hand-edited) and the same
+  snapshot in the manifest `modelCatalog`, so `models list --provider commandcode` and `/model`
+  work before a credential or gateway exists.
+- Refreshes the live catalog from `GET https://api.commandcode.ai/provider/v1/models` at runtime
+  with a short TTL; the live endpoint is the single source of truth.
+- Resolves models that the per-agent registry does not contain through a `resolveDynamicModel`
+  hook, so inference does not fail with `Unknown model`.
+- Routes `claude-*` ids to the Anthropic Messages endpoint and every other model to OpenAI Chat
+  Completions.
+- Accepts OpenAI function calling, streaming with usage accounting, reasoning effort, and both
+  `max_completion_tokens` and `max_tokens` on the verified Provider API.
+- Reports provider-neutral model metadata instead of invented prices: `cost` is `0`, `maxTokens`
+  is `min(contextWindow, 131072)`, and `input` stays `["text"]`.
 
-```bash
-openclaw config set agents.defaults.model.primary "commandcode/deepseek/deepseek-v4-flash"
-```
+## Requirements
 
-## Compatibility
+- OpenClaw `>= 2026.7.1`; CI builds and tests on Node.js 24.
+- A Command Code account on a plan **with Provider API access** (GOAT, Pro, Max, Team, or
+  Provider). The **Go** plan has no API access and requests return HTTP `403 upgrade_required`.
+- Model availability depends on the plan: models outside it return HTTP `403 MODEL_NOT_IN_PLAN`.
+  This error is verified against the live Provider API but is not listed in the public error table
+  on the [Provider API docs](https://commandcode.ai/docs/provider#errors).
 
-Verified against the live Provider API through OpenClaw's OpenAI-compatible
-transport (endpoint class `custom`, payload captured and inspected):
+## Configuration
 
-- **Tool calls**: OpenAI function-calling format (`tools`, `tool_choice`,
-  `tool_calls` results) — full tool loops work in agent runs.
-- **Reasoning levels**: OpenClaw `--thinking` levels are sent as
-  `reasoning_effort` (+ `thinking: {"type": "enabled"}`) and accepted;
-  reasoning content is streamed back in `reasoning`/`reasoning_details`.
-- **Streaming + usage**: SSE streaming with `stream_options.include_usage`;
-  token usage and prompt-cache hits (`cacheRead`) are accounted.
-- **Output budgets**: both `max_completion_tokens` and `max_tokens` are
-  accepted by the endpoint.
-- **Transport routing**: `claude-*` ids use Anthropic Messages
-  (`/provider/v1/messages`); every other model uses OpenAI Chat Completions
-  (`/provider/v1/chat/completions`).
+| Setting | Purpose | Default |
+| --- | --- | --- |
+| `COMMAND_CODE_API_KEY` | Bearer key for inference; the recommended way to provide it. | none |
+| Auth profile `commandcode:default` | Alternative to the environment variable; stored by OpenClaw. | none |
+| `models.providers.commandcode.apiKey` | Explicit provider configuration; set it to the env var name. | none |
+| `agents.defaults.model.primary` | Default model, for example `commandcode/deepseek/deepseek-v4-flash`. | none |
+| Static baseline | Generated snapshot used for pre-credential discovery and dynamic resolution. | shipped in the plugin |
 
-Model availability depends on your Command Code plan: models outside the plan
-return HTTP `403 MODEL_NOT_IN_PLAN` (see Troubleshooting). This error is
-verified against the live Provider API but is not listed in the public error
-table on the [Provider API docs](https://commandcode.ai/docs/provider#errors),
-which only covers the common cases.
+## Privacy and security
 
-## Model resolution
-
-The static baseline, the manifest catalog, and the live catalog share one
-projection (`projectModel` in `index.ts`); **ids** and **context windows** come
-from the `/models` endpoint — the baseline is a generated snapshot of it,
-never hand-maintained. Because that endpoint returns context length but
-**not** per-token pricing, output limits, or input modalities, OpenClaw model
-entries use conservative provider-neutral defaults:
-
-- `cost` is reported as `0` so OpenClaw never displays fabricated prices.
-  Enriching costs from the Command Code pricing table is a possible future
-  enhancement.
-- `maxTokens` is derived per model as `min(contextWindow, 131072)`, so large
-  context models are never advertised with an unbounded output cap.
-- `input` stays `["text"]` (no vision/additional modality per model is
-  advertised, since `/models` does not report it).
-
-At inference time, if a model id is not present in the per-agent registry
-(which OpenClaw builds from `models.json` plus the auth-proof materialization
-described above), the registered `resolveDynamicModel` hook resolves it
-synchronously from the bundled baseline. Unknown ids still resolve to a
-conservative provider-neutral definition (by `claude-*` transport convention
-where applicable), so newly published models work without re-installing the
-plugin or refreshing the baseline.
+The API key is read from the environment variable, the OpenClaw auth profile, or explicit provider
+configuration; the plugin never writes it. Do not commit keys, `.env` files, or credential stores.
+Discovery uses the public `/models` endpoint, and inference traffic goes to Command Code only. See
+[SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ## Troubleshooting
 
-- **`No API key found for provider "commandcode"`** — inference requires a
-  resolvable key. Configure one as shown in [Configure auth](#configure-auth)
-  and check `openclaw models auth list`.
-- **HTTP `403 MODEL_NOT_IN_PLAN`** — the selected model is not included in
-  your Command Code plan. Pick a model your plan covers, or upgrade the plan /
-  enable on-demand usage on commandcode.ai. Verified against the live Provider
-  API (e.g. `claude-*` models on a GOAT key), though not listed in the public
-  error table on the [Provider API docs](https://commandcode.ai/docs/provider#errors).
-- **HTTP `403 upgrade_required`** — the Go plan has no Provider API access.
-- **Model missing from `models list`** — refresh the bundled snapshot with
-  `node scripts/generate-baseline.mjs` (the live catalog picks new models up
-  automatically at runtime anyway).
+### `No API key found for provider "commandcode"`
 
-## Develop / Test
+Inference requires a resolvable key. Configure one as shown in [Quick start](#quick-start) and
+check `openclaw models auth list`.
+
+### HTTP `403 MODEL_NOT_IN_PLAN`
+
+The selected model is not included in your Command Code plan. Pick a model your plan covers, or
+upgrade the plan / enable on-demand usage on commandcode.ai.
+
+### HTTP `403 upgrade_required`
+
+The Go plan has no Provider API access. Use a plan that includes the Provider API.
+
+### Model missing from `models list`
+
+Refresh the bundled snapshot with `node scripts/generate-baseline.mjs`; the live catalog picks new
+models up automatically at runtime anyway.
+
+## Development
+
+Requirements: Node.js 24 and npm.
 
 ```bash
+git clone https://github.com/TheStreamCode/openclaw-command-code.git
+cd openclaw-command-code
 npm install
-npm run build      # tsc -> dist/index.js
-npm test           # vitest: projection, dynamic resolution, manifest drift guard
-node scripts/generate-baseline.mjs   # refresh baseline + manifest modelCatalog
-node scripts/smoke.discovery.mjs     # static(pre-credential) + live discovery smoke
-node scripts/live-test.mjs           # live inference (reads the key from ~/.openclaw/secrets/providers.json)
+npm run typecheck
+npm run build
+npm test
+node scripts/generate-baseline.mjs   # refresh baseline and manifest modelCatalog
 ```
 
-The repo intentionally ships **no TypeScript `.d.ts`**: the plugin is consumed
-as a runtime entry (`dist/index.js`), not as a typed library, and an exported
-definition type would not be portable. `dist/` is **committed** because
-OpenClaw git/package installs require the compiled runtime — the
-TypeScript-source fallback only applies to local dev paths (`plugins.load.paths`,
-`--link`). Regenerate it with `npm run build` after any source change (the
-`prepack` script also builds it for npm publish).
+`dist/` is committed because OpenClaw git and package installs require the compiled runtime;
+regenerate it with `npm run build` after any source change, and commit it with the source. The
+baseline module and the manifest catalog are generated from the same fetched rows; never edit them
+by hand. CI fails when the committed `dist/` does not match a fresh build.
 
-A GitHub Actions workflow (`.github/workflows/ci.yml`) runs type-check, build,
-unit tests, and a freshness check that fails when the committed `dist/` does
-not match the TypeScript sources, on every push to `main` and on pull
-requests. Updates to this tooling are applied manually on purpose — there is
-no Dependabot or any other automatic update / notification bot configured.
-
-## Publish (maintainers)
-
-The plugin is published on
-[ClawHub](https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code).
-To publish a new version (requires `clawhub login`):
-
-```bash
-clawhub package publish TheStreamCode/openclaw-command-code --family code-plugin --dry-run
-clawhub package publish TheStreamCode/openclaw-command-code --family code-plugin
-```
-
-## Files
-
-```
-index.ts                    # plugin entry: provider + live/static catalog + dynamic resolution
-src/baseline.models.ts       # generated baseline snapshot (never hand-edited)
-openclaw.plugin.json         # manifest (provider id, auth env var, onboarding choice, modelCatalog)
-package.json                 # package + openclaw extension metadata
-LICENSE                      # MIT
-test/modelMapping.test.ts    # vitest unit tests (projection, dynamic resolution, manifest drift guard)
-scripts/generate-baseline.mjs # rewrites the baseline module + manifest modelCatalog
-scripts/smoke.discovery.mjs   # live discovery smoke test against the public endpoint
-scripts/live-test.mjs         # live inference test using the stored key (never printed)
-.github/workflows/ci.yml      # GitHub Actions: typecheck + build + dist freshness + tests
-.gitattributes                 # LF normalization
-AGENTS.md                      # agent-oriented project guide
-```
+Additional scripts: `node scripts/smoke.discovery.mjs` checks static (pre-credential) and live
+discovery, and `node scripts/live-test.mjs` runs live inference using the stored key without
+printing it.
 
 ## Support
 
-If this plugin is useful to you, consider
-[sponsoring the maintainer on GitHub](https://github.com/sponsors/TheStreamCode).
+Usage questions and workflows belong in GitHub Discussions; reproducible defects belong in GitHub
+Issues using the bug report form. See [SUPPORT.md](SUPPORT.md). Problems in Command Code or
+OpenClaw themselves belong to their respective projects.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests must pass the required CI checks.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT — see [`LICENSE`](LICENSE).
+
+---
+
+Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it).
+If this project is useful to you, consider
+[sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Refreshed static model baseline 56 → 82 models from the live
+- Refreshed static model baseline 56 to 82 models from the live
   `/models` endpoint (adds DeepSeek V4.1 Flash, GPT-6 family, Grok 4.7,
   Qwen 3.8-Flash/Omni, Kimi/MiMo/GLM updates, and others; no removals).
   Manifest `modelCatalog` regenerated in sync. Reported in #11.

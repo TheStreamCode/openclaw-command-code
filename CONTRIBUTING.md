@@ -1,35 +1,41 @@
-# Contributing to openclaw-command-code
+# Contributing
 
-Thanks for your interest in improving this project! Bug reports, fixes, docs,
-and tests are all welcome.
+## Scope
 
-## Development setup
+This repository is maintained by Michael Gasperini (Mikesoft). Bug reports and focused proposals are
+welcome through GitHub Issues. Support questions belong in the channel described in `SUPPORT.md`.
+Security issues must follow `SECURITY.md` and must not be reported publicly.
 
-```bash
-npm ci
-npm run typecheck
-npm run build
-npm test
-```
+## Reporting a bug
 
-CI repeats the same gate and additionally rejects the build when the committed
-`dist/` output is stale — run `npm run build` and commit the refreshed `dist/`
-before pushing.
+Open a bug report and include:
 
-## Regenerating the model baseline
+- what you expected and what happened;
+- the exact version (release tag or package version);
+- operating system, runtime version and the product version it integrates with;
+- the smallest reproduction you can share, with logs and error text.
 
-`src/baseline.models.ts` and the manifest catalog are generated from a single
-projection:
+Reports without version information cannot be reproduced and may be closed.
 
-```bash
-node scripts/generate-baseline.mjs
-```
+## Proposing a change
 
-Commit the regenerated files together so the baseline, the manifest, and
-`dist/` stay in sync.
+1. Open an issue describing the problem before writing code, unless the change is a typo or a
+   documentation fix.
+2. Fork the repository and create a branch from `main`.
+3. Keep the change focused: one problem per pull request.
+4. Follow Conventional Commits (`type(scope): summary`, English, imperative mood).
+5. Update documentation and `CHANGELOG.md` when behavior changes.
+6. Run the checks listed in the README development section before opening the pull request.
 
-## Pull requests
+## What is not accepted
 
-- Keep changes focused; one concern per PR.
-- Add or update tests (`vitest`) for behavior changes.
-- Never commit API keys, tokens, or account data.
+- Changes that add telemetry, analytics or background network calls without an explicit maintainer
+  decision.
+- Dependency bumps that are not validated by CI.
+- Large refactors mixed with behavior changes.
+- Reformatting of unrelated files.
+
+## Review and release
+
+Pull requests must pass the required checks. Releases are tag-driven and are published only by the
+maintainer. Merge method is squash, and the commit title follows Conventional Commits.
