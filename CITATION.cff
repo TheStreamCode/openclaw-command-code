@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "openclaw-command-code"
+version: 0.1.1
+date-released: "2026-09-27"
+url: "https://github.com/TheStreamCode/openclaw-command-code"
+repository-code: "https://github.com/TheStreamCode/openclaw-command-code"
+license: MIT
+abstract: >-
+  Independent Command Code model provider plugin for OpenClaw with three-tier
+  model resolution: a generated static baseline, a live catalog refreshed at
+  runtime, and a dynamic resolver for models missing from the agent registry.
+keywords:
+  - ai-provider
+  - command-code
+  - llm
+  - model-provider
+  - openclaw
+  - openclaw-plugin
+authors:
+  - family-names: Gasperini
+    given-names: Michael
+    affiliation: Mikesoft

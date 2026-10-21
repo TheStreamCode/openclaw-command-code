@@ -5,12 +5,12 @@
   "type": "module",
   "license": "MIT",
   "private": false,
-  "author": "TheStreamCode",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TheStreamCode/openclaw-command-code.git"
+  "author": {
+    "name": "Michael Gasperini",
+    "url": "https://mikesoft.it"
   },
-  "homepage": "https://github.com/TheStreamCode/openclaw-command-code#readme",
+  "repository": "github:TheStreamCode/openclaw-command-code",
+  "homepage": "https://clawhub.ai/plugins/@thestreamcode/openclaw-command-code",
   "bugs": {
     "url": "https://github.com/TheStreamCode/openclaw-command-code/issues"
   },
