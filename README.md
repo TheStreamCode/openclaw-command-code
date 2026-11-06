@@ -1,4 +1,4 @@
-# openclaw-command-code
+# Command Code for OpenClaw
 
 Command Code model provider for OpenClaw with three-tier model resolution
 
@@ -169,5 +169,4 @@ MIT — see [`LICENSE`](LICENSE).
 ---
 
 Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it).
-If this project is useful to you, consider
-[sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
+If this project is useful to you, consider [sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
