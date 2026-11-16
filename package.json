@@ -62,7 +62,7 @@
     "openclaw": ">=2026.7.1"
   },
   "devDependencies": {
-    "openclaw": "2026.11.1",
+    "openclaw": "2026.11.3",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
