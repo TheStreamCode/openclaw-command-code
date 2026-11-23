@@ -62,10 +62,10 @@
     "openclaw": ">=2026.7.1"
   },
   "devDependencies": {
-    "openclaw": "2026.11.1",
+    "openclaw": "2026.11.6",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "overrides": {
     "undici": "8.12.2",
